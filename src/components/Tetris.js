@@ -40,27 +40,43 @@ const Tetris = (props) => {
     
     const randomBlock = block[random];
     console.log(randomBlock);
-    
-    let rows = [];
-    for(let i=0; i<props.rows; i++) {
-        let cols = [];
-        for(let j=0; j<props.cols; j++) {
-            let criteria = 0;
-                randomBlock.forEach(([ x, y ]) => {
-                     if(x == j && y == i)
-                        criteria = 1;
-                });
-            if( criteria === 1) {
-                cols.push(<Cell fill="1" />);
-            } else {
-                cols.push(<Cell fill="0" />);
+
+    let Stage = function() {
+        let rows = [];
+        for(let i=0; i<props.rows; i++) {
+            let cols = [];
+            for(let j=0; j<props.cols; j++) {
+                let criteria = 0;
+                    randomBlock.forEach(([ x, y ]) => {
+                        if(x === j && y === i)
+                            criteria = 1;
+                    });
+                if( criteria === 1) {
+                    cols.push(<Cell fill="1" />);
+                } else {
+                    cols.push(<Cell fill="0" />);
+                }
             }
+            rows.push(<div className="Row">{cols}</div>);
         }
-        rows.push(<div className="Row">{cols}</div>);
+        return <div className="Tetris">{rows}</div>;
     }
 
+    let updateStage = () => {
+        myY++;
+        randomBlock.forEach(([ x, y ]) => {
+            y = y+1;
+       });
+    }
+
+    setInterval(() => {
+            Stage();
+            updateStage(); 
+    }, 1000);
+    
+
     return (
-        <div className="Tetris">{rows}</div>
+        <div>{Stage()}</div>
     )
 }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Tetris.css';
 
 
@@ -63,17 +63,21 @@ const Tetris = (props) => {
     }
 
     let updateStage = () => {
-        myY++;
-        randomBlock.forEach(([ x, y ]) => {
-            y = y+1;
-       });
+        if(myY < props.rows) {
+            myY++;
+            randomBlock.forEach(([ x, y ]) => {
+                y = y+1;
+            });
+        }
+        
     }
-
-    setInterval(() => {
+    useEffect(() => {
+        setTimeout(() => {
+            console.log("runn");
             Stage();
-            updateStage(); 
-    }, 1000);
-    
+            updateStage();
+        }, 1000);
+      }, []);
 
     return (
         <div>{Stage()}</div>

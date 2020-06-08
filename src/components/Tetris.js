@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/Tetris.css';
-
 
 const Cell = (props) => {
     let cellclass = '';
@@ -13,8 +12,9 @@ const Cell = (props) => {
 }
 
 const Tetris = (props) => {
-    let myX = Math.floor(props.cols/2);
-    let myY = 0;
+    const [myX, setMyX] = useState(Math.floor(props.cols/2));
+    const [myY, setMyY] = useState(0);
+
     const block = {
         'I' : [
                 [myX-2, myY], 
@@ -36,10 +36,10 @@ const Tetris = (props) => {
         ]
     } 
     const blockStr = 'ILZ';              
-    const random = blockStr[Math.floor(Math.random() * blockStr.length)];
+    let random = blockStr[Math.floor(Math.random() * blockStr.length)];
     
-    const randomBlock = block[random];
-    console.log(randomBlock);
+    const [randomBlock, setrandomBlock] = useState(block[random]);
+    //console.log(randomBlock);
 
     let Stage = function() {
         let rows = [];
@@ -47,10 +47,10 @@ const Tetris = (props) => {
             let cols = [];
             for(let j=0; j<props.cols; j++) {
                 let criteria = 0;
-                    randomBlock.forEach(([ x, y ]) => {
+                randomBlock.forEach(([ x, y ]) => {
                         if(x === j && y === i)
                             criteria = 1;
-                    });
+                });
                 if( criteria === 1) {
                     cols.push(<Cell fill="1" />);
                 } else {
@@ -62,22 +62,34 @@ const Tetris = (props) => {
         return <div className="Tetris">{rows}</div>;
     }
 
-    let updateStage = () => {
-        if(myY < props.rows) {
-            myY++;
-            randomBlock.forEach(([ x, y ]) => {
-                y = y+1;
-            });
-        }
-        
-    }
     useEffect(() => {
-        setTimeout(() => {
-            console.log("runn");
-            Stage();
-            updateStage();
+        const timer = window.setInterval(() => {
+            if(myY < props.rows) {
+                setMyY(y => y+1);
+                setrandomBlock( b => {
+                    b.forEach(([ x, y ], i) => {
+                            y++;
+                            b[i] = [x, y];
+                        })
+                    return b;
+                    }
+                );
+            } else {
+                setMyY(y => 0);
+               
+            }
+            
+            //console.log(myY,props.rows);
         }, 1000);
-      }, []);
+        return () => {
+            window.clearInterval(timer);
+            if(myY == 0) {
+                let randomizer = blockStr[Math.floor(Math.random() * blockStr.length)];
+                //console.log(block[randomizer]);
+                setrandomBlock(b => block[randomizer]);
+            }
+          };
+      }, [myY]);
 
     return (
         <div>{Stage()}</div>

@@ -65,7 +65,7 @@ const Tetris = (props) => {
     }
 
     //commit board state and render a new block
-    function commitBoard() {
+    const commitBoard = () => {
         const blockColorCode = blockColor(currentBlockType);
         currentBlock.forEach(([x, y]) => {
             committedBoard[y][x] = blockColorCode;
@@ -78,42 +78,7 @@ const Tetris = (props) => {
         setCurrentY(0);
     }
 
-    //function called on arrow keypressed
-    let keydownHandlerMaker = (timer) => {
-        let handler = function (e) {
-            e = e || window.event;
-            if (Keycode.isEventKey(e, 'down')) {
-                window.clearTimeout(timer['timer']);
-                timer['timer'] = debounce(intervalFunction, 300);
-                debounce.cancel;
-            } else if (Keycode.isEventKey(e, 'left')) {
-                let leftAllowed = true;
-                currentBlock.forEach(([x, y]) => {
-                    if (x - 1 < 0 || committedBoard[currentY][x - 1]) {
-                        leftAllowed = false;
-                    }
-                });
-
-                if (leftAllowed) {
-                    setCurrentX(x => x - 1);
-                }
-            } else if (Keycode.isEventKey(e, 'right')) {
-                let rightAllowed = true;
-                currentBlock.forEach(([x, y]) => {
-                    if (x + 1 >= colCount || committedBoard[currentY][x + 1]) {
-                        rightAllowed = false;
-                    }
-                });
-
-                if (rightAllowed) {
-                    setCurrentX(x => x + 1);
-                }
-            }
-        }
-        return handler;
-    }
-
-    const intervalFunction = () => {
+    const moveBlockDown = () => {
         let maxY = 0;
         currentBlock.forEach(([x, y]) => {
             maxY = Math.max(maxY, y);
@@ -126,19 +91,44 @@ const Tetris = (props) => {
         }
     }
 
-    //function used for useeffect hook
-    let updateState = function () {
-        const timer = { timer: setTimeout(intervalFunction, 1000) };
-        const keydownHandler = keydownHandlerMaker(timer);
-        window.addEventListener('keydown', keydownHandler);
+    //function called on arrow keypressed
+    let handleKeyEvents = (e) => {
+        if (Keycode.isEventKey(e, 'down')) {
+            moveBlockDown();
+        } else if (Keycode.isEventKey(e, 'left')) {
+            let leftAllowed = true;
+            currentBlock.forEach(([x, y]) => {
+                if (x - 1 < 0 || committedBoard[y][x - 1]) {
+                    leftAllowed = false;
+                }
+            });
+
+            if (leftAllowed) {
+                setCurrentX(x => x - 1);
+            }
+        } else if (Keycode.isEventKey(e, 'right')) {
+            let rightAllowed = true;
+            currentBlock.forEach(([x, y]) => {
+                if (x + 1 >= colCount || committedBoard[y][x + 1]) {
+                    rightAllowed = false;
+                }
+            });
+
+            if (rightAllowed) {
+                setCurrentX(x => x + 1);
+            }
+        }
+    }
+
+    useEffect(() => {
+        const timer = setTimeout(moveBlockDown, 1000);
+        window.addEventListener('keydown', handleKeyEvents);
 
         return () => {
-            window.clearInterval(timer['timer']);
-            window.removeEventListener('keydown', keydownHandler);
+            window.clearTimeout(timer);
+            window.removeEventListener('keydown', handleKeyEvents);
         };
-    };
-
-    useEffect(updateState);
+    });
 
     return (
         <div> <div className="Tetris">{rows}</div></div>

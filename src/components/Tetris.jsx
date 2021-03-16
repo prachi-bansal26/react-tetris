@@ -75,6 +75,21 @@ const Tetris = (props) => {
         })
         setCommittedBoard(committedBoard);
 
+        // Remove empty rows
+        for (let i = 0; i < rowCount; i++) {
+            let isFullyFilled = true;
+            committedBoard[i].forEach(value => {
+                if (value === 0) isFullyFilled = false;
+            });
+
+            if (isFullyFilled) {
+                const emptyRow = committedBoard[i].fill(0);
+                committedBoard.splice(i, 1);
+                committedBoard.splice(0, 0, emptyRow);
+            }
+        }
+
+        // Add new block
         setCurrentBlockType(getRandomBlock());
         setCurrentRotation(0);
         setCurrentX(Math.floor(colCount / 2))

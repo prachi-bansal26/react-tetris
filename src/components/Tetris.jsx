@@ -27,9 +27,20 @@ const buildEmptyBoard = (rowCount, colCount) => {
     return arr;
 };
 
+const isGameOver = (board) => {
+    let over = false;
+    board[0].forEach((item) => {
+        if (item !== 0) {
+            over = true;
+        }
+    });
+    return over;
+}
+
 //main tetris component
 const Tetris = (props) => {
     const {cols: colCount, rows: rowCount } = props;
+    const [gameOver, setGameOver] = useState(false);
     const [currentX, setCurrentX] = useState(Math.floor(colCount / 2));
     const [currentY, setCurrentY] = useState(0);
     const [currentBlockType, setCurrentBlockType] = useState(getRandomBlock());
@@ -89,6 +100,12 @@ const Tetris = (props) => {
             }
         }
 
+        // check game over
+        if (isGameOver(committedBoard)) {
+            setGameOver(true);
+            return;
+        }
+
         // Add new block
         setCurrentBlockType(getRandomBlock());
         setCurrentRotation(0);
@@ -106,6 +123,7 @@ const Tetris = (props) => {
                 downAllowed = false;
             }
         });
+
         if (downAllowed) {
             setCurrentY(y => y + 1);
         } else {
@@ -151,6 +169,11 @@ const Tetris = (props) => {
     }
 
     useEffect(() => {
+        if (gameOver) {
+            window.removeEventListener('keydown', handleKeyEvents);
+            return;
+        }
+
         const timer = setTimeout(moveBlockDown, 1000);
         window.addEventListener('keydown', handleKeyEvents);
 
@@ -160,8 +183,12 @@ const Tetris = (props) => {
         };
     });
 
+    if (gameOver) {
+        return "Game Over";
+    }
+
     return (
-        <div> <div className="Tetris">{rows}</div></div>
+        <div className="Tetris">{rows}</div>
     )
 }
 

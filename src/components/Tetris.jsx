@@ -88,27 +88,26 @@ const Tetris = (props) => {
                 timer['timer'] = debounce(intervalFunction, 300);
                 debounce.cancel;
             } else if (Keycode.isEventKey(e, 'left')) {
-                let minX = colCount;
+                let leftAllowed = true;
                 currentBlock.forEach(([x, y]) => {
-                    minX = Math.min(minX, x);
+                    if (x - 1 < 0 || committedBoard[currentY][x - 1]) {
+                        leftAllowed = false;
+                    }
                 });
 
-                let prevX = minX - 1 >= 0 ? committedBoard[currentY][minX - 1] : -1;
-                if (prevX == 0) {
-                    setCurrentX(x => x - 1 < 0 ? 0 : x - 1);
-                } else if (prevX != -1) {
-                    commitBoard();
+                if (leftAllowed) {
+                    setCurrentX(x => x - 1);
                 }
             } else if (Keycode.isEventKey(e, 'right')) {
-                let maxX = 0;
+                let rightAllowed = true;
                 currentBlock.forEach(([x, y]) => {
-                    maxX = Math.max(maxX, x);
+                    if (x + 1 >= colCount || committedBoard[currentY][x + 1]) {
+                        rightAllowed = false;
+                    }
                 });
-                let nextX = maxX + 1 < colCount ? committedBoard[currentY][maxX + 1] : -1;
-                if (nextX == 0) {
-                    setCurrentX(x => x + 1 > colCount ? x : x + 1);
-                } else if (nextX != -1) {
-                    commitBoard();
+
+                if (rightAllowed) {
+                    setCurrentX(x => x + 1);
                 }
             }
         }

@@ -39,25 +39,24 @@ const Tetris = (props) => {
 
     const [committedBoard, setCommittedBoard] = useState(buildEmptyBoard(rowCount, colCount));
 
-    let blockColorCode = blockColor(currentBlockType);
-
     let rows = [];
     for (let i = 0; i < rowCount; i++) {
         let cols = [];
+        const blockColorCode = blockColor(currentBlockType);
         for (let j = 0; j < colCount; j++) {
-            let criteria = 0;
+            let colorStatus = 0;
             if (committedBoard[i][j] != 0) {
-                criteria = 1;
+                colorStatus = committedBoard[i][j];
             } else {
                 currentBlock.forEach(([x, y]) => {
                     if (x === j && y === i) {
-                        criteria = 1;
+                        colorStatus = blockColorCode;
                     }
                 });
             }
 
-            if (criteria === 1) {
-                cols.push(<Cell fill="1" color={blockColorCode} />);
+            if (colorStatus != 0) {
+                cols.push(<Cell fill="1" color={colorStatus} />);
             } else {
                 cols.push(<Cell fill="0" color="#FFF" />);
             }

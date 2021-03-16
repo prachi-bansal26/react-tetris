@@ -79,12 +79,13 @@ const Tetris = (props) => {
     }
 
     const moveBlockDown = () => {
-        let maxY = 0;
+        let downAllowed = true;
         currentBlock.forEach(([x, y]) => {
-            maxY = Math.max(maxY, y);
+            if (y + 1 >= rowCount || committedBoard[y + 1][x]) {
+                downAllowed = false;
+            }
         });
-        let nextValue = maxY + 1 < rowCount ? committedBoard[maxY + 1][currentX] : 1;
-        if (nextValue === 0) {
+        if (downAllowed) {
             setCurrentY(y => y + 1);
         } else {
             commitBoard();

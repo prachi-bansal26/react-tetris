@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import _, { debounce } from "lodash";
 import Keycode from 'keycode';
 import { getBlock, getRandomBlock, blockColor } from '../utils';
 
@@ -34,8 +33,9 @@ const Tetris = (props) => {
     const [currentX, setCurrentX] = useState(Math.floor(colCount / 2));
     const [currentY, setCurrentY] = useState(0);
     const [currentBlockType, setCurrentBlockType] = useState(getRandomBlock());
+    const [currentRotation, setCurrentRotation] = useState(0);
 
-    const currentBlock = getBlock(currentBlockType, currentX, currentY);
+    const currentBlock = getBlock(currentBlockType, currentX, currentY, currentRotation);
 
     const [committedBoard, setCommittedBoard] = useState(buildEmptyBoard(rowCount, colCount));
 
@@ -73,7 +73,7 @@ const Tetris = (props) => {
         setCommittedBoard(committedBoard);
 
         setCurrentBlockType(getRandomBlock());
-
+        setCurrentRotation(0);
         setCurrentX(Math.floor(colCount / 2))
         setCurrentY(0);
     }
@@ -94,7 +94,9 @@ const Tetris = (props) => {
 
     //function called on arrow keypressed
     let handleKeyEvents = (e) => {
-        if (Keycode.isEventKey(e, 'down')) {
+        if (Keycode.isEventKey(e, 'up')) {
+            setCurrentRotation(rotation => rotation + 1);
+        } else if (Keycode.isEventKey(e, 'down')) {
             moveBlockDown();
         } else if (Keycode.isEventKey(e, 'left')) {
             let leftAllowed = true;

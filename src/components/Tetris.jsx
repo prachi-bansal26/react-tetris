@@ -68,6 +68,9 @@ const Tetris = (props) => {
     const commitBoard = () => {
         const blockColorCode = blockColor(currentBlockType);
         currentBlock.forEach(([x, y]) => {
+            // Block cells which haven't been rendered
+            if (y < 0) return;
+
             committedBoard[y][x] = blockColorCode;
         })
         setCommittedBoard(committedBoard);
@@ -81,6 +84,9 @@ const Tetris = (props) => {
     const moveBlockDown = () => {
         let downAllowed = true;
         currentBlock.forEach(([x, y]) => {
+            // Block cells which haven't been rendered
+            if (y < 0) return;
+
             if (y + 1 >= rowCount || committedBoard[y + 1][x]) {
                 downAllowed = false;
             }
@@ -101,6 +107,9 @@ const Tetris = (props) => {
         } else if (Keycode.isEventKey(e, 'left')) {
             let leftAllowed = true;
             currentBlock.forEach(([x, y]) => {
+                // Block cells which haven't been rendered
+                if (y < 0) return;
+
                 if (x - 1 < 0 || committedBoard[y][x - 1]) {
                     leftAllowed = false;
                 }
@@ -112,6 +121,9 @@ const Tetris = (props) => {
         } else if (Keycode.isEventKey(e, 'right')) {
             let rightAllowed = true;
             currentBlock.forEach(([x, y]) => {
+                // Block cells which haven't been rendered
+                if (y < 0) return;
+
                 if (x + 1 >= colCount || committedBoard[y][x + 1]) {
                     rightAllowed = false;
                 }
